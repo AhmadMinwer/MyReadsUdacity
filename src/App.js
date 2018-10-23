@@ -41,6 +41,7 @@ class BooksApp extends React.Component {
 
     
     handleChange = (Book,event) => {
+      
       let  index =0;
       for( index=0; index<this.state.Books.length; index++){
         if(Book.id === this.state.Books[index].id)
@@ -48,14 +49,21 @@ class BooksApp extends React.Component {
       }
 
       
-
-      let newBooks = this.state.Books;
-      newBooks[index].shelf = event.target.value
-      this.setState({Books: newBooks});
-
-      BooksAPI.update(Book,event.target.value);
-
-
+      var newBooks
+      if(index <this.state.Books.length ){
+        
+        newBooks = this.state.Books;
+        
+        newBooks[index].shelf = event.target.value
+  
+      }else{
+        
+        newBooks = this.state.Books;
+        
+        newBooks.push(Book)
+        newBooks[index].shelf = event.target.value   
+      }
+      BooksAPI.update(Book,event.target.value).then(() => {this.setState({Books: newBooks});});
     }
 
   // changeShelf= (Book) =>{

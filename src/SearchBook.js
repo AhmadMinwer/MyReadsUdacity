@@ -1,43 +1,83 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import BookShelf from './BookShelf'
+import * as BooksAPI from './BooksAPI'
 
 class SearchBook extends Component {
     
     state = {
-        query: ''
+        query: '',
+        searchResult:[],
     }
 
-
-
+    
 
     updateQuery = (query) => {
         this.setState(() => ({
             query: query
         }))
+
+        BooksAPI.search(query)
+        .then((searchResult) => {
+            searchResult
+            ? this.setState(() => ({searchResult}))
+            : []
+        }) 
     }
 
 
+    searchForIDs(id){
+        for( let j=0; j< this.props.books.length;j++){
+            if(id===this.props.books[j].id){
+                return this.props.books[j]
+            }
+        }
+        return false
+    }
+
+
+    getShowingBooks(){
+        let array =[]
+        for(let i=0; i< this.state.searchResult.length ;i++){
+            
+            if(this.searchForIDs(this.state.searchResult[i].id)){
+                array.push(this.searchForIDs(this.state.searchResult[i].id))
+            }else{
+                array.push(this.state.searchResult[i])
+            }
+        }
+        return array
+        
+    }
+
     
+
+   
 
 
 
     render() {
         const { query } = this.state
-        const  Books  = this.props.books
         
-
-
+      
         const showingBooks = query === ''
-        ? []
-        : Books.filter((c) => (
-            c.title.toLowerCase().includes(query.toLowerCase()) || c.authors.toString().toLowerCase().includes(query.toLowerCase())
-        ))
+            ? []
+            : this.getShowingBooks()
+            
+
+
+        // const showingBooks = query === ''
+        // ? []
+        // : this.state.Books.filter((c) => (
+            
+        //     c.title.toLowerCase().includes(query.toLowerCase()) || c.authors.toString().toLowerCase().includes(query.toLowerCase())
+        // ))
 
 
         return (
 
             <div className="search-books">
+            
                 
                 <div className="search-books-bar">
                     <Link to="/" className="close-search" >Close</Link>
@@ -61,11 +101,15 @@ class SearchBook extends Component {
                     </div>
                 </div>
                 <div className="search-books-results">
-                    
-                    
+                                        
                     <ol className="books-grid">
-                    <BookShelf books={showingBooks} 
-                                changeShelf= {this.props.changeShelf}/>
+                    { 
+                        // I have to right some code here to wait untill all data is
+                        //fetched, otherwise if the internet conection was slow my code will show no Books found and after the data is fetched 
+                        // my code will rerendering and show the books, but I'm not sure how i can do it :(
+                        <BookShelf books={showingBooks} 
+                                 changeShelf= {this.props.changeShelf}
+                                 query={query}/> }
                     </ol>
                 </div>
             </div>

@@ -28,7 +28,7 @@ class BookShelf extends  React.Component {
                                 </li>
                             ))
                     )
-                  }else if(Books.length<=0 && this.props.query.length >0){
+                  }else if(Books.length<=0 && this.props.query && this.props.query.length >0){
                        return ( <div>Books not found!</div>)
                   }
                     
